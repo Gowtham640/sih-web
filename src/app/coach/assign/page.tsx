@@ -72,7 +72,7 @@ export default function AssignPage() {
             </div>
             
             {/* Main Content Area */}
-            <div className="bg-white h-2/3 px-8 py-8 h-auto">
+            <div className="bg-white px-8 py-8 h-auto">
                 <div className="w-full max-w-none">
                     {/* Athletes List */}
                     <div className="mb-8">

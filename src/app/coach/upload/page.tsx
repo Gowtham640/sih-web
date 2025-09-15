@@ -41,13 +41,13 @@ export default function UploadPage() {
         }
     };
 
-    const handleUpload = () => {
-        if (selectedFile) {
-            // Handle file upload logic here
-            console.log('Uploading file:', selectedFile.name);
-            // You can add actual upload logic here
-        }
-    };
+    // const handleUpload = () => {
+    //     if (selectedFile) {
+    //         // Handle file upload logic here
+    //         console.log('Uploading file:', selectedFile.name);
+    //         // You can add actual upload logic here
+    //     }
+    // };
 
     const handleAddDrill = () => {
         if (drillName && drillGoal && instructions) {
