@@ -10,7 +10,7 @@ export default function SubmitPage() {
     const [cameraPermission, setCameraPermission] = useState<boolean | null>(null);
     const [selectedDrill, setSelectedDrill] = useState<string>('');
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-    const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
+    const [, setRecordedChunks] = useState<Blob[]>([]);
     const videoRef = useRef<HTMLVideoElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
 

@@ -106,10 +106,10 @@ export default function Home() {
             <p className="text-gray-600 mb-8">Choose your role and begin your training journey today.</p>
             <div className="flex justify-center gap-6">
               <button onClick={() => router.push('/coach')} className="bg-gradient-to-r from-purple-900 to-blue-900 text-white px-8 py-4 rounded-lg font-medium hover:from-purple-800 hover:to-blue-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg">
-                I'm a Coach
+                I&apos;m a Coach
               </button>
               <button onClick={() => router.push('/athlete')} className="bg-gradient-to-r from-blue-900 to-purple-900 text-white px-8 py-4 rounded-lg font-medium hover:from-blue-800 hover:to-purple-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg">
-                I'm an Athlete
+                I&apos;m an Athlete
               </button>
             </div>
           </div>
