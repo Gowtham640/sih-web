@@ -7,7 +7,17 @@ export default function ReportPage() {
     const [selectedReport, setSelectedReport] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [showProgressGraph, setShowProgressGraph] = useState(false);
-    const [selectedDrillProgress, setSelectedDrillProgress] = useState<any>(null);
+    const [selectedDrillProgress, setSelectedDrillProgress] = useState<{
+        id: string;
+        drillName: string;
+        category: string;
+        goal: string;
+        progressHistory: Array<{
+            date: string;
+            goal: string;
+            achieved: string;
+        }>;
+    } | null>(null);
 
     // Mock data with Indian names and realistic scenarios
     const reports = [
@@ -476,7 +486,11 @@ export default function ReportPage() {
                                     <div className="bg-gray-50 rounded-xl p-6">
                                         <h4 className="text-lg font-bold text-gray-800 mb-4">Progress Over Time</h4>
                                         <div className="space-y-4">
-                                            {selectedDrillProgress.progressHistory.map((entry: any, index: number) => (
+                                            {selectedDrillProgress.progressHistory.map((entry: {
+                                                date: string;
+                                                goal: string;
+                                                achieved: string;
+                                            }, index: number) => (
                                                 <div key={index} className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
                                                     <div className="flex-1">
                                                         <div className="flex items-center space-x-4">

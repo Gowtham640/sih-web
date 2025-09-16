@@ -9,7 +9,16 @@ export default function ReviewPage() {
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [selectedDrillVideo, setSelectedDrillVideo] = useState<string>('');
     const [showGoalUpdateModal, setShowGoalUpdateModal] = useState(false);
-    const [selectedDrill, setSelectedDrill] = useState<any>(null);
+    const [selectedDrill, setSelectedDrill] = useState<{
+        id: string;
+        name: string;
+        status: string;
+        score: number | null;
+        date: string;
+        videoUrl: string;
+        goal: string;
+        currentGoal: string;
+    } | null>(null);
     const [newGoal, setNewGoal] = useState('');
     const [showToast, setShowToast] = useState(false);
 
@@ -114,7 +123,16 @@ export default function ReviewPage() {
         setShowVideoModal(true);
     };
 
-    const handleUpdateGoal = (drill: any) => {
+    const handleUpdateGoal = (drill: {
+        id: string;
+        name: string;
+        status: string;
+        score: number | null;
+        date: string;
+        videoUrl: string;
+        goal: string;
+        currentGoal: string;
+    }) => {
         setSelectedDrill(drill);
         setNewGoal(drill.currentGoal);
         setShowGoalUpdateModal(true);
