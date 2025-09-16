@@ -44,10 +44,11 @@ export default function CoachDashboard() {
                     <p className="text-2xl font-bold">{coach.name}</p>
                 </div>
                 <p className='absolute text-white font-sans font-bold text-6xl '>Coach Dashboard</p>
-                <div className="absolute right-3 flex gap-2">
-                    <button onClick={handleLogout} className="font-roboto font-medium text-lg flex text-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">Logout</button>
-                    <button onClick={() => router.push('/')} className="font-roboto font-medium text-lg flex text-center bg-white text-blue-900 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">Home</button>
-                </div>
+                <button onClick={() => router.push('/')} className="absolute right-3 bg-white text-blue-900 p-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                </button>
             </div>
 
             {/* Stats Section */}
@@ -118,6 +119,117 @@ export default function CoachDashboard() {
                 </div>
             </div>
 
+
+            {/* Drill Analytics Chart */}
+            <div className="bg-white px-8 py-6 flex justify-center">
+                <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-8 max-w-4xl w-full">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Drill Completion Analytics</h2>
+                    <div className="flex flex-col lg:flex-row items-center gap-8">
+                        {/* Pie Chart */}
+                        <div className="flex-1 flex justify-center">
+                            <div className="relative w-80 h-80">
+                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                    {/* Background circle */}
+                                    <circle cx="50" cy="50" r="35" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1"/>
+
+                                    {/* Completed drills - 40% */}
+                                    <circle
+                                        cx="50" cy="50" r="35"
+                                        fill="none"
+                                        stroke="url(#gradient1)"
+                                        strokeWidth="12"
+                                        strokeDasharray="88.0 131.9"
+                                        strokeDashoffset="0"
+                                        className="transition-all duration-1500 ease-out"
+                                        style={{filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))'}}
+                                    />
+
+                                    {/* Pending drills - 35% */}
+                                    <circle
+                                        cx="50" cy="50" r="35"
+                                        fill="none"
+                                        stroke="url(#gradient2)"
+                                        strokeWidth="12"
+                                        strokeDasharray="77.0 142.9"
+                                        strokeDashoffset="-88.0"
+                                        className="transition-all duration-1500 ease-out"
+                                        style={{filter: 'drop-shadow(0 4px 8px rgba(147, 51, 234, 0.3))'}}
+                                    />
+
+                                    {/* Submitted drills - 25% */}
+                                    <circle
+                                        cx="50" cy="50" r="35"
+                                        fill="none"
+                                        stroke="url(#gradient3)"
+                                        strokeWidth="12"
+                                        strokeDasharray="55.0 164.9"
+                                        strokeDashoffset="-165.0"
+                                        className="transition-all duration-1500 ease-out"
+                                        style={{filter: 'drop-shadow(0 4px 8px rgba(236, 72, 153, 0.3))'}}
+                                    />
+
+                                    {/* Center glow effect */}
+                                    <circle cx="50" cy="50" r="25" fill="url(#centerGradient)" opacity="0.1"/>
+
+                                    {/* Gradients */}
+                                    <defs>
+                                        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#3b82f6"/>
+                                            <stop offset="30%" stopColor="#1d4ed8"/>
+                                            <stop offset="70%" stopColor="#1e40af"/>
+                                            <stop offset="100%" stopColor="#1e3a8a"/>
+                                        </linearGradient>
+                                        <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#1e40af"/>
+                                            <stop offset="20%" stopColor="#7c3aed"/>
+                                            <stop offset="50%" stopColor="#9333ea"/>
+                                            <stop offset="80%" stopColor="#7c3aed"/>
+                                            <stop offset="100%" stopColor="#6d28d9"/>
+                                        </linearGradient>
+                                        <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#6d28d9"/>
+                                            <stop offset="30%" stopColor="#ec4899"/>
+                                            <stop offset="70%" stopColor="#db2777"/>
+                                            <stop offset="100%" stopColor="#be185d"/>
+                                        </linearGradient>
+                                        <radialGradient id="centerGradient" cx="50%" cy="50%" r="50%">
+                                            <stop offset="0%" stopColor="#3b82f6"/>
+                                            <stop offset="50%" stopColor="#9333ea"/>
+                                            <stop offset="100%" stopColor="#ec4899"/>
+                                        </radialGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                        </div>
+
+                        {/* Legend */}
+                        <div className="flex-1 space-y-6">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg"></div>
+                                <div>
+                                    <p className="font-bold text-gray-800 text-lg">Completed</p>
+                                    <p className="text-sm text-gray-600 font-medium">96 drills (40%)</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-purple-700 shadow-lg"></div>
+                                <div>
+                                    <p className="font-bold text-gray-800 text-lg">Pending</p>
+                                    <p className="text-sm text-gray-600 font-medium">84 drills (35%)</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-pink-700 shadow-lg"></div>
+                                <div>
+                                    <p className="font-bold text-gray-800 text-lg">Submitted</p>
+                                    <p className="text-sm text-gray-600 font-medium">60 drills (25%)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Main Content Area */}
             <div className="bg-white h-auto px-8 py-8 flex justify-center">
                 <div className="bg-gray-50 rounded-2xl p-8 max-w-7xl w-full">
@@ -144,6 +256,9 @@ export default function CoachDashboard() {
                                     <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 mb-6">
                                         <p className="text-purple-800 text-xs font-medium text-center">
                                             💡 Upload videos, set goals, and create detailed instructions for each drill
+                                        </p>
+                                        <p className="text-purple-700 text-xs text-center mt-2">
+                                            📝 Create comprehensive drill libraries for your athletes
                                         </p>
                                     </div>
                                 </div>
@@ -175,6 +290,9 @@ export default function CoachDashboard() {
                                         <p className="text-blue-800 text-xs font-medium text-center">
                                             🎯 Set custom goals, deadlines, and track athlete progress
                                         </p>
+                                        <p className="text-blue-700 text-xs text-center mt-2">
+                                            👥 Assign personalized drills to individual athletes
+                                        </p>
                                     </div>
                                 </div>
                                 <button onClick={() => router.push('/coach/assign')} className="w-full bg-gradient-to-r from-purple-900 to-blue-900 text-white px-8 py-4 rounded-lg font-medium hover:from-purple-800 hover:to-blue-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg mt-auto">
@@ -204,6 +322,9 @@ export default function CoachDashboard() {
                                     <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-6">
                                         <p className="text-green-800 text-xs font-medium text-center">
                                             📊 Review submissions, provide feedback, and track improvements
+                                        </p>
+                                        <p className="text-green-700 text-xs text-center mt-2">
+                                            🔍 Monitor athlete performance and provide detailed feedback
                                         </p>
                                     </div>
                                 </div>

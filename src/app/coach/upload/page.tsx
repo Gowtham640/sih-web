@@ -214,13 +214,15 @@ export default function UploadPage() {
     return (
         <div className='bg-white w-full min-h-screen'>
             {/* Gradient Header */}
-            <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-32 flex items-center justify-center">
-                <p className='absolute text-white font-sans font-bold text-5xl'>Create New Drill</p>
+            <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-1/5 flex items-center justify-center">
+                <p className='absolute text-white font-sans font-bold text-5xl'>Upload Reference Video</p>
                 <button
                     onClick={() => router.push('/coach')}
-                    className="absolute right-3 font-roboto font-medium text-lg flex text-center bg-white text-blue-900 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                    className="absolute right-3 bg-white text-blue-900 p-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg"
                 >
-                    Back to Dashboard
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
                 </button>
             </div>
 
