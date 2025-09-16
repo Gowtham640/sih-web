@@ -21,6 +21,18 @@ export default function ReviewPage() {
     } | null>(null);
     const [newGoal, setNewGoal] = useState('');
     const [showToast, setShowToast] = useState(false);
+    const [showProgressGraph, setShowProgressGraph] = useState(false);
+    const [selectedDrillProgress, setSelectedDrillProgress] = useState<{
+        id: string;
+        drillName: string;
+        category: string;
+        goal: string;
+        progressHistory: Array<{
+            date: string;
+            goal: string;
+            achieved: string;
+        }>;
+    } | null>(null);
 
     // Mock data with Indian names
     const athletes = [
@@ -32,8 +44,38 @@ export default function ReviewPage() {
             pendingDrills: 2, 
             submittedDrills: 1,
             drills: [
-                { id: '1', name: 'Batting Practice', status: 'completed', score: 85, date: '2024-01-15', videoUrl: '', goal: '100m in 10 seconds', currentGoal: '100m in 9.5 seconds' },
-                { id: '2', name: 'Bowling Technique', status: 'submitted', score: null, date: '2024-01-14', videoUrl: 'sample-video-1.mp4', goal: 'Bowling accuracy 80%', currentGoal: 'Bowling accuracy 80%' },
+                { 
+                    id: '1', 
+                    name: 'Batting Practice', 
+                    status: 'completed', 
+                    score: 85, 
+                    date: '2024-01-15', 
+                    videoUrl: '', 
+                    goal: 'Complete 50 batting shots', 
+                    currentGoal: 'Complete 65 batting shots',
+                    progressHistory: [
+                        { date: '2024-01-01', goal: '50 shots', achieved: '48 shots' },
+                        { date: '2024-01-05', goal: '55 shots', achieved: '52 shots' },
+                        { date: '2024-01-10', goal: '60 shots', achieved: '58 shots' },
+                        { date: '2024-01-15', goal: '65 shots', achieved: '63 shots' }
+                    ]
+                },
+                { 
+                    id: '2', 
+                    name: 'Bowling Technique', 
+                    status: 'submitted', 
+                    score: null, 
+                    date: '2024-01-14', 
+                    videoUrl: 'sample-video-1.mp4', 
+                    goal: 'Bowling accuracy 80%', 
+                    currentGoal: 'Bowling accuracy 80%',
+                    progressHistory: [
+                        { date: '2024-01-01', goal: '70% accuracy', achieved: '65% accuracy' },
+                        { date: '2024-01-05', goal: '75% accuracy', achieved: '72% accuracy' },
+                        { date: '2024-01-10', goal: '80% accuracy', achieved: '78% accuracy' },
+                        { date: '2024-01-14', goal: '80% accuracy', achieved: '79% accuracy' }
+                    ]
+                },
                 { id: '3', name: 'Fielding Drills', status: 'pending', score: null, date: '2024-01-13', videoUrl: '', goal: 'Catch 15 balls', currentGoal: 'Catch 15 balls' },
             ]
         },
@@ -45,8 +87,38 @@ export default function ReviewPage() {
             pendingDrills: 1, 
             submittedDrills: 3,
             drills: [
-                { id: '4', name: 'Footwork Training', status: 'completed', score: 92, date: '2024-01-14', videoUrl: '', goal: 'Complete 20 rallies', currentGoal: 'Complete 25 rallies' },
-                { id: '5', name: 'Smash Practice', status: 'submitted', score: null, date: '2024-01-13', videoUrl: 'sample-video-2.mp4', goal: 'Smash accuracy 75%', currentGoal: 'Smash accuracy 75%' },
+                { 
+                    id: '4', 
+                    name: 'Footwork Training', 
+                    status: 'completed', 
+                    score: 92, 
+                    date: '2024-01-14', 
+                    videoUrl: '', 
+                    goal: 'Complete 20 rallies', 
+                    currentGoal: 'Complete 25 rallies',
+                    progressHistory: [
+                        { date: '2024-01-01', goal: '20 rallies', achieved: '18 rallies' },
+                        { date: '2024-01-05', goal: '22 rallies', achieved: '20 rallies' },
+                        { date: '2024-01-10', goal: '24 rallies', achieved: '22 rallies' },
+                        { date: '2024-01-14', goal: '25 rallies', achieved: '24 rallies' }
+                    ]
+                },
+                { 
+                    id: '5', 
+                    name: 'Smash Practice', 
+                    status: 'submitted', 
+                    score: null, 
+                    date: '2024-01-13', 
+                    videoUrl: 'sample-video-2.mp4', 
+                    goal: 'Smash accuracy 75%', 
+                    currentGoal: 'Smash accuracy 75%',
+                    progressHistory: [
+                        { date: '2024-01-01', goal: '65% accuracy', achieved: '60% accuracy' },
+                        { date: '2024-01-05', goal: '70% accuracy', achieved: '68% accuracy' },
+                        { date: '2024-01-10', goal: '75% accuracy', achieved: '73% accuracy' },
+                        { date: '2024-01-13', goal: '75% accuracy', achieved: '74% accuracy' }
+                    ]
+                },
                 { id: '6', name: 'Serve Technique', status: 'submitted', score: null, date: '2024-01-12', videoUrl: 'sample-video-3.mp4', goal: 'Serve 10 aces', currentGoal: 'Serve 10 aces' },
             ]
         },
@@ -155,13 +227,15 @@ export default function ReviewPage() {
     return (
         <div className='bg-white w-full h-screen'>
             {/* Gradient Header */}
-            <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-1/5 flex items-center">
-                <p className='absolute text-white font-roboto font-bold text-2xl'>Review Test Results</p>
-                <button 
-                    onClick={() => router.push('/coach')} 
-                    className="absolute right-3 font-roboto font-medium text-lg flex text-center bg-white text-blue-900 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+            <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-1/5 flex items-center justify-center">
+                <p className='absolute text-white font-roboto font-bold text-5xl'>Review Test Results</p>
+                <button
+                    onClick={() => router.push('/coach')}
+                    className="absolute right-3 bg-white text-blue-900 p-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg"
                 >
-                    Back to Dashboard
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
                 </button>
             </div>
             
@@ -300,6 +374,23 @@ export default function ReviewPage() {
                                                     <span className="text-gray-500">Current Goal: </span>
                                                     <span className="font-medium text-blue-600">{drill.currentGoal}</span>
                                                 </div>
+                                                {(drill as any).progressHistory && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedDrillProgress({
+                                                                id: drill.id,
+                                                                drillName: drill.name,
+                                                                category: selectedAthleteData.sport,
+                                                                goal: drill.goal,
+                                                                progressHistory: (drill as any).progressHistory
+                                                            });
+                                                            setShowProgressGraph(true);
+                                                        }}
+                                                        className="mt-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-purple-500 hover:to-blue-500 hover:scale-105 transform transition-all duration-300"
+                                                    >
+                                                        View Progress Graph
+                                                    </button>
+                                                )}
                                             </div>
                                             <div className="flex items-center space-x-3">
                                                 <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(drill.status)}`}>
@@ -419,6 +510,249 @@ export default function ReviewPage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
                                 Goal updated successfully!
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Progress Graph Modal */}
+                    {showProgressGraph && selectedDrillProgress && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white rounded-2xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-2xl font-bold text-gray-800">Progress Tracking - {selectedDrillProgress.drillName}</h3>
+                                    <button
+                                        onClick={() => setShowProgressGraph(false)}
+                                        className="text-gray-500 hover:text-gray-700"
+                                    >
+                                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div className="mb-6">
+                                    <p className="text-gray-600 mb-4">
+                                        <span className="font-medium">Current Goal:</span> {selectedDrillProgress.goal}
+                                    </p>
+                                    
+                                    <div className="bg-gray-50 rounded-xl p-6">
+                                        <h4 className="text-lg font-bold text-gray-800 mb-4">Progress Over Time</h4>
+                                        
+                                        <div className="mb-8">
+                                            <h5 className="text-md font-bold text-gray-800 mb-4">Performance Timeline</h5>
+                                            <div className="bg-white rounded-lg p-6 border-2 border-gray-200">
+                                                <div className="h-80 relative">
+                                                    <svg className="w-full h-full" viewBox="0 0 800 300">
+                                                        {/* Y-axis (Time) */}
+                                                        <line x1="60" y1="20" x2="60" y2="280" stroke="#e5e7eb" strokeWidth="2"/>
+                                                        {/* X-axis (Performance) */}
+                                                        <line x1="60" y1="280" x2="740" y2="280" stroke="#e5e7eb" strokeWidth="2"/>
+                                                        
+                                                        {/* Extract numeric values and create chart */}
+                                                        {selectedDrillProgress.progressHistory.map((entry: {
+                                                            date: string;
+                                                            goal: string;
+                                                            achieved: string;
+                                                        }, index: number) => {
+                                                            // Extract numeric values - handle different formats
+                                                            const goalValue = parseFloat(entry.goal.match(/(\d+\.?\d*)/)?.[1] || '0');
+                                                            const achievedValue = parseFloat(entry.achieved.match(/(\d+\.?\d*)/)?.[1] || '0');
+                                                            
+                                                            // Find min and max values for scaling
+                                                            const allValues = selectedDrillProgress.progressHistory.map((e: {
+                                                                date: string;
+                                                                goal: string;
+                                                                achieved: string;
+                                                            }) => [
+                                                                parseFloat(e.goal.match(/(\d+\.?\d*)/)?.[1] || '0'),
+                                                                parseFloat(e.achieved.match(/(\d+\.?\d*)/)?.[1] || '0')
+                                                            ]).flat();
+                                                            const minValue = Math.min(...allValues);
+                                                            const maxValue = Math.max(...allValues);
+                                                            const valueRange = maxValue - minValue || 1; // Avoid division by zero
+                                                            
+                                                            // Calculate positions - X for performance, Y for time
+                                                            const goalX = 60 + ((goalValue - minValue) / valueRange) * 680;
+                                                            const achievedX = 60 + ((achievedValue - minValue) / valueRange) * 680;
+                                                            const y = 280 - (index / (selectedDrillProgress.progressHistory.length - 1)) * 240;
+                                                            
+                                                            return (
+                                                                <g key={index}>
+                                                                    {/* Goal point */}
+                                                                    <circle
+                                                                        cx={goalX}
+                                                                        cy={y}
+                                                                        r="6"
+                                                                        fill="#ef4444"
+                                                                        className="transition-all duration-500"
+                                                                    />
+                                                                    {/* Achieved point */}
+                                                                    <circle
+                                                                        cx={achievedX}
+                                                                        cy={y}
+                                                                        r="6"
+                                                                        fill="#10b981"
+                                                                        className="transition-all duration-500"
+                                                                    />
+                                                                    
+                                                                    {/* Connect to next point */}
+                                                                    {index < selectedDrillProgress.progressHistory.length - 1 && (
+                                                                        <>
+                                                                            {/* Goal line */}
+                                                                            <line
+                                                                                x1={goalX}
+                                                                                y1={y}
+                                                                                x2={60 + ((parseFloat(selectedDrillProgress.progressHistory[index + 1].goal.match(/(\d+\.?\d*)/)?.[1] || '0') - minValue) / valueRange) * 680}
+                                                                                y2={280 - ((index + 1) / (selectedDrillProgress.progressHistory.length - 1)) * 240}
+                                                                                stroke="#ef4444"
+                                                                                strokeWidth="3"
+                                                                                strokeDasharray="8,4"
+                                                                                className="transition-all duration-500"
+                                                                            />
+                                                                            {/* Achieved line */}
+                                                                            <line
+                                                                                x1={achievedX}
+                                                                                y1={y}
+                                                                                x2={60 + ((parseFloat(selectedDrillProgress.progressHistory[index + 1].achieved.match(/(\d+\.?\d*)/)?.[1] || '0') - minValue) / valueRange) * 680}
+                                                                                y2={280 - ((index + 1) / (selectedDrillProgress.progressHistory.length - 1)) * 240}
+                                                                                stroke="#10b981"
+                                                                                strokeWidth="3"
+                                                                                className="transition-all duration-500"
+                                                                            />
+                                                                        </>
+                                                                    )}
+                                                                    
+                                                                    {/* Time labels on Y-axis */}
+                                                                    <text x="50" y={y + 5} fontSize="12" fill="#6b7280" textAnchor="end">
+                                                                        {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                                    </text>
+                                                                    
+                                                                    {/* Performance labels on X-axis */}
+                                                                    <text x={goalX} y="295" fontSize="10" fill="#ef4444" textAnchor="middle">
+                                                                        {entry.goal.match(/(\d+\.?\d*)/)?.[1] || '0'}{entry.goal.includes('minutes') ? 'min' : entry.goal.includes('shots') ? 'shots' : entry.goal.includes('rallies') ? 'rallies' : entry.goal.includes('accuracy') ? '%' : 's'}
+                                                                    </text>
+                                                                    <text x={achievedX} y="310" fontSize="10" fill="#10b981" textAnchor="middle">
+                                                                        {entry.achieved.match(/(\d+\.?\d*)/)?.[1] || '0'}{entry.achieved.includes('minutes') ? 'min' : entry.achieved.includes('shots') ? 'shots' : entry.achieved.includes('rallies') ? 'rallies' : entry.achieved.includes('accuracy') ? '%' : 's'}
+                                                                    </text>
+                                                                </g>
+                                                            );
+                                                        })}
+                                                        
+                                                        {/* X-axis labels (Performance) */}
+                                                        {(() => {
+                                                            const allValues = selectedDrillProgress.progressHistory.map((e: {
+                                                                date: string;
+                                                                goal: string;
+                                                                achieved: string;
+                                                            }) => [
+                                                                parseFloat(e.goal.match(/(\d+\.?\d*)/)?.[1] || '0'),
+                                                                parseFloat(e.achieved.match(/(\d+\.?\d*)/)?.[1] || '0')
+                                                            ]).flat();
+                                                            const minValue = Math.min(...allValues);
+                                                            const maxValue = Math.max(...allValues);
+                                                            const midValue = (minValue + maxValue) / 2;
+                                                            
+                                                            // Determine unit from the first entry
+                                                            const firstEntry = selectedDrillProgress.progressHistory[0];
+                                                            const unit = firstEntry.goal.includes('minutes') ? 'min' : 
+                                                                        firstEntry.goal.includes('seconds') ? 's' : 
+                                                                        firstEntry.goal.includes('shots') ? 'shots' : 
+                                                                        firstEntry.goal.includes('rallies') ? 'rallies' :
+                                                                        firstEntry.goal.includes('accuracy') ? '%' :
+                                                                        firstEntry.goal.includes('dribbles') ? 'dribbles' :
+                                                                        firstEntry.goal.includes('sprints') ? 'sprints' : 's';
+                                                            
+                                                            return (
+                                                                <>
+                                                                    <text x="60" y="320" fontSize="12" fill="#6b7280" textAnchor="start">
+                                                                        {minValue}{unit}
+                                                                    </text>
+                                                                    <text x="400" y="320" fontSize="12" fill="#6b7280" textAnchor="middle">
+                                                                        {midValue.toFixed(1)}{unit}
+                                                                    </text>
+                                                                    <text x="740" y="320" fontSize="12" fill="#6b7280" textAnchor="end">
+                                                                        {maxValue}{unit}
+                                                                    </text>
+                                                                </>
+                                                            );
+                                                        })()}
+                                                        
+                                                        {/* Axis labels */}
+                                                        <text x="400" y="340" fontSize="14" fill="#374151" textAnchor="middle" fontWeight="bold">
+                                                            {(() => {
+                                                                const firstEntry = selectedDrillProgress.progressHistory[0];
+                                                                if (firstEntry.goal.includes('minutes')) return 'Performance (Minutes)';
+                                                                if (firstEntry.goal.includes('shots')) return 'Performance (Shots)';
+                                                                if (firstEntry.goal.includes('rallies')) return 'Performance (Rallies)';
+                                                                if (firstEntry.goal.includes('accuracy')) return 'Performance (Accuracy %)';
+                                                                if (firstEntry.goal.includes('dribbles')) return 'Performance (Dribbles)';
+                                                                if (firstEntry.goal.includes('sprints')) return 'Performance (Sprints)';
+                                                                return 'Performance (Seconds)';
+                                                            })()}
+                                                        </text>
+                                                        <text x="20" y="150" fontSize="14" fill="#374151" textAnchor="middle" fontWeight="bold" transform="rotate(-90 20 150)">
+                                                            Time (Days)
+                                                        </text>
+                                                    </svg>
+                                                </div>
+                                                
+                                                {/* Legend */}
+                                                <div className="flex justify-center space-x-8 mt-4">
+                                                    <div className="flex items-center space-x-2">
+                                                        <div className="w-4 h-4 rounded-full bg-red-500"></div>
+                                                        <span className="text-sm text-gray-700">Goal</span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-2">
+                                                        <div className="w-4 h-4 rounded-full bg-green-500"></div>
+                                                        <span className="text-sm text-gray-700">Achieved</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Detailed Progress Timeline */}
+                                            <div className="mt-6">
+                                                <h5 className="text-md font-bold text-gray-800 mb-4">Detailed Progress</h5>
+                                                <div className="space-y-3">
+                                                    {selectedDrillProgress.progressHistory.map((entry: {
+                                                        date: string;
+                                                        goal: string;
+                                                        achieved: string;
+                                                    }, index: number) => (
+                                                        <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
+                                                            <div className="flex justify-between items-center">
+                                                                <div>
+                                                                    <p className="font-medium text-gray-800">{new Date(entry.date).toLocaleDateString('en-US', { 
+                                                                        weekday: 'long', 
+                                                                        year: 'numeric', 
+                                                                        month: 'long', 
+                                                                        day: 'numeric' 
+                                                                    })}</p>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <p className="text-sm text-gray-600">
+                                                                        <span className="font-medium">Goal:</span> {entry.goal}
+                                                                    </p>
+                                                                    <p className="text-sm text-gray-600">
+                                                                        <span className="font-medium">Achieved:</span> {entry.achieved}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={() => setShowProgressGraph(false)}
+                                        className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-500 hover:to-blue-500 hover:scale-105 transform transition-all duration-300"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
