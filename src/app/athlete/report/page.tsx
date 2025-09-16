@@ -6,6 +6,18 @@ export default function ReportPage() {
     const router = useRouter();
     const [selectedReport, setSelectedReport] = useState<string | null>(null);
     const [filterStatus, setFilterStatus] = useState<string>('all');
+    const [showProgressGraph, setShowProgressGraph] = useState(false);
+    const [selectedDrillProgress, setSelectedDrillProgress] = useState<{
+        id: string;
+        drillName: string;
+        category: string;
+        goal: string;
+        progressHistory: Array<{
+            date: string;
+            goal: string;
+            achieved: string;
+        }>;
+    } | null>(null);
 
     // Mock data with Indian names and realistic scenarios
     const reports = [
@@ -22,7 +34,13 @@ export default function ReportPage() {
             approvedDate: '2024-01-17',
             goal: 'Improve batting technique and timing',
             instructions: 'Focus on proper stance, watch the ball closely, and maintain balance throughout the shot. Practice for 30 minutes daily. Record yourself performing 20 batting shots with proper form.',
-            submittedVideo: null
+            submittedVideo: null,
+            progressHistory: [
+                { date: '2024-01-01', goal: '100m in 12 seconds', achieved: '100m in 12.2 seconds' },
+                { date: '2024-01-05', goal: '100m in 11.5 seconds', achieved: '100m in 11.8 seconds' },
+                { date: '2024-01-10', goal: '100m in 11 seconds', achieved: '100m in 11.1 seconds' },
+                { date: '2024-01-15', goal: '100m in 10.5 seconds', achieved: '100m in 10.8 seconds' }
+            ]
         },
         {
             id: '2',
@@ -52,7 +70,13 @@ export default function ReportPage() {
             approvedDate: '2024-01-15',
             goal: 'Master ball control and close touches',
             instructions: 'Keep the ball close to your feet, use both feet equally, and practice changing direction quickly. Record yourself dribbling through cones for 3 minutes.',
-            submittedVideo: null
+            submittedVideo: null,
+            progressHistory: [
+                { date: '2024-01-01', goal: 'Dribble 50m in 10 seconds', achieved: 'Dribble 50m in 10.5 seconds' },
+                { date: '2024-01-05', goal: 'Dribble 50m in 9 seconds', achieved: 'Dribble 50m in 9.2 seconds' },
+                { date: '2024-01-10', goal: 'Dribble 50m in 8 seconds', achieved: 'Dribble 50m in 8.1 seconds' },
+                { date: '2024-01-14', goal: 'Dribble 50m in 7 seconds', achieved: 'Dribble 50m in 7.3 seconds' }
+            ]
         },
         {
             id: '4',
@@ -81,7 +105,13 @@ export default function ReportPage() {
             rejectedDate: '2024-01-13',
             goal: 'Improve speed and endurance',
             instructions: 'Focus on explosive starts, maintain form throughout the race, and practice proper breathing technique. Record yourself running 3 sets of 100m sprints.',
-            submittedVideo: 'sprint-training-submission.mp4'
+            submittedVideo: 'sprint-training-submission.mp4',
+            progressHistory: [
+                { date: '2024-01-01', goal: '100m in 13 seconds', achieved: '100m in 13.2 seconds' },
+                { date: '2024-01-05', goal: '100m in 12.5 seconds', achieved: '100m in 12.8 seconds' },
+                { date: '2024-01-10', goal: '100m in 12 seconds', achieved: '100m in 12.1 seconds' },
+                { date: '2024-01-12', goal: '100m in 11.5 seconds', achieved: '100m in 11.8 seconds' }
+            ]
         },
         {
             id: '6',
@@ -300,6 +330,17 @@ export default function ReportPage() {
                                     <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                                         <h3 className="font-bold text-blue-900 mb-3">Drill Goal</h3>
                                         <p className="text-blue-800">{selectedReportData.goal}</p>
+                                        {selectedReportData.progressHistory && (
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedDrillProgress(selectedReportData);
+                                                    setShowProgressGraph(true);
+                                                }}
+                                                className="mt-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-500 hover:to-blue-600 hover:scale-105 transform transition-all duration-300"
+                                            >
+                                                View Progress Graph
+                                            </button>
+                                        )}
                                     </div>
 
                                     <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-4">
@@ -417,6 +458,90 @@ export default function ReportPage() {
                             <div className="text-gray-600">Pending Review</div>
                         </div>
                     </div>
+
+                    {/* Progress Graph Modal */}
+                    {showProgressGraph && selectedDrillProgress && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white rounded-2xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-2xl font-bold text-gray-800">
+                                        Progress Tracking - {selectedDrillProgress.drillName}
+                                    </h3>
+                                    <button
+                                        onClick={() => setShowProgressGraph(false)}
+                                        className="text-gray-500 hover:text-gray-700"
+                                    >
+                                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div className="mb-6">
+                                    <p className="text-gray-600 mb-4">
+                                        <span className="font-medium">Current Goal:</span> {selectedDrillProgress.goal}
+                                    </p>
+                                    
+                                    {/* Progress Chart */}
+                                    <div className="bg-gray-50 rounded-xl p-6">
+                                        <h4 className="text-lg font-bold text-gray-800 mb-4">Progress Over Time</h4>
+                                        <div className="space-y-4">
+                                            {selectedDrillProgress.progressHistory.map((entry: {
+                                                date: string;
+                                                goal: string;
+                                                achieved: string;
+                                            }, index: number) => (
+                                                <div key={index} className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center space-x-4">
+                                                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                                <span className="text-blue-600 font-bold text-sm">{index + 1}</span>
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-sm text-gray-500">{entry.date}</div>
+                                                                <div className="font-medium text-gray-800">Goal: {entry.goal}</div>
+                                                                <div className="text-sm text-gray-600">Achieved: {entry.achieved}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center space-x-2">
+                                                        {/* Progress indicator */}
+                                                        <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                                                        <span className="text-sm text-green-600 font-medium">Completed</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        
+                                        {/* Visual Progress Bar */}
+                                        <div className="mt-6">
+                                            <h5 className="text-md font-bold text-gray-800 mb-3">Overall Progress</h5>
+                                            <div className="w-full bg-gray-200 rounded-full h-3">
+                                                <div 
+                                                    className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500"
+                                                    style={{ width: `${(selectedDrillProgress.progressHistory.length / 5) * 100}%` }}
+                                                ></div>
+                                            </div>
+                                            <div className="flex justify-between text-sm text-gray-600 mt-2">
+                                                <span>Start</span>
+                                                <span>{selectedDrillProgress.progressHistory.length}/5 milestones</span>
+                                                <span>Target</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={() => setShowProgressGraph(false)}
+                                        className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 py-3 rounded-lg font-medium hover:from-gray-500 hover:to-gray-600 hover:scale-105 transform transition-all duration-300"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
