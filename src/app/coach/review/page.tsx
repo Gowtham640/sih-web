@@ -8,6 +8,10 @@ export default function ReviewPage() {
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [selectedDrillVideo, setSelectedDrillVideo] = useState<string>('');
+    const [showGoalUpdateModal, setShowGoalUpdateModal] = useState(false);
+    const [selectedDrill, setSelectedDrill] = useState<any>(null);
+    const [newGoal, setNewGoal] = useState('');
+    const [showToast, setShowToast] = useState(false);
 
     // Mock data with Indian names
     const athletes = [
@@ -19,9 +23,9 @@ export default function ReviewPage() {
             pendingDrills: 2, 
             submittedDrills: 1,
             drills: [
-                { id: '1', name: 'Batting Practice', status: 'completed', score: 85, date: '2024-01-15', videoUrl: '' },
-                { id: '2', name: 'Bowling Technique', status: 'submitted', score: null, date: '2024-01-14', videoUrl: 'sample-video-1.mp4' },
-                { id: '3', name: 'Fielding Drills', status: 'pending', score: null, date: '2024-01-13', videoUrl: '' },
+                { id: '1', name: 'Batting Practice', status: 'completed', score: 85, date: '2024-01-15', videoUrl: '', goal: '100m in 10 seconds', currentGoal: '100m in 9.5 seconds' },
+                { id: '2', name: 'Bowling Technique', status: 'submitted', score: null, date: '2024-01-14', videoUrl: 'sample-video-1.mp4', goal: 'Bowling accuracy 80%', currentGoal: 'Bowling accuracy 80%' },
+                { id: '3', name: 'Fielding Drills', status: 'pending', score: null, date: '2024-01-13', videoUrl: '', goal: 'Catch 15 balls', currentGoal: 'Catch 15 balls' },
             ]
         },
         { 
@@ -32,9 +36,9 @@ export default function ReviewPage() {
             pendingDrills: 1, 
             submittedDrills: 3,
             drills: [
-                { id: '4', name: 'Footwork Training', status: 'completed', score: 92, date: '2024-01-14', videoUrl: '' },
-                { id: '5', name: 'Smash Practice', status: 'submitted', score: null, date: '2024-01-13', videoUrl: 'sample-video-2.mp4' },
-                { id: '6', name: 'Serve Technique', status: 'submitted', score: null, date: '2024-01-12', videoUrl: 'sample-video-3.mp4' },
+                { id: '4', name: 'Footwork Training', status: 'completed', score: 92, date: '2024-01-14', videoUrl: '', goal: 'Complete 20 rallies', currentGoal: 'Complete 25 rallies' },
+                { id: '5', name: 'Smash Practice', status: 'submitted', score: null, date: '2024-01-13', videoUrl: 'sample-video-2.mp4', goal: 'Smash accuracy 75%', currentGoal: 'Smash accuracy 75%' },
+                { id: '6', name: 'Serve Technique', status: 'submitted', score: null, date: '2024-01-12', videoUrl: 'sample-video-3.mp4', goal: 'Serve 10 aces', currentGoal: 'Serve 10 aces' },
             ]
         },
         { 
@@ -45,9 +49,9 @@ export default function ReviewPage() {
             pendingDrills: 4, 
             submittedDrills: 2,
             drills: [
-                { id: '7', name: 'Dribbling Skills', status: 'completed', score: 78, date: '2024-01-13', videoUrl: '' },
-                { id: '8', name: 'Passing Accuracy', status: 'submitted', score: null, date: '2024-01-12', videoUrl: 'sample-video-4.mp4' },
-                { id: '9', name: 'Shooting Practice', status: 'submitted', score: null, date: '2024-01-11', videoUrl: 'sample-video-5.mp4' },
+                { id: '7', name: 'Dribbling Skills', status: 'completed', score: 78, date: '2024-01-13', videoUrl: '', goal: 'Dribble 50m in 8 seconds', currentGoal: 'Dribble 50m in 7 seconds' },
+                { id: '8', name: 'Passing Accuracy', status: 'submitted', score: null, date: '2024-01-12', videoUrl: 'sample-video-4.mp4', goal: 'Pass accuracy 85%', currentGoal: 'Pass accuracy 85%' },
+                { id: '9', name: 'Shooting Practice', status: 'submitted', score: null, date: '2024-01-11', videoUrl: 'sample-video-5.mp4', goal: 'Score 8/10 shots', currentGoal: 'Score 8/10 shots' },
             ]
         },
         { 
@@ -58,9 +62,9 @@ export default function ReviewPage() {
             pendingDrills: 0, 
             submittedDrills: 5,
             drills: [
-                { id: '10', name: 'Freestyle Stroke', status: 'completed', score: 88, date: '2024-01-12', videoUrl: '' },
-                { id: '11', name: 'Butterfly Technique', status: 'submitted', score: null, date: '2024-01-11', videoUrl: 'sample-video-6.mp4' },
-                { id: '12', name: 'Breaststroke Form', status: 'submitted', score: null, date: '2024-01-10', videoUrl: 'sample-video-7.mp4' },
+                { id: '10', name: 'Freestyle Stroke', status: 'completed', score: 88, date: '2024-01-12', videoUrl: '', goal: 'Swim 100m in 1:20', currentGoal: 'Swim 100m in 1:15' },
+                { id: '11', name: 'Butterfly Technique', status: 'submitted', score: null, date: '2024-01-11', videoUrl: 'sample-video-6.mp4', goal: 'Butterfly 50m in 35s', currentGoal: 'Butterfly 50m in 35s' },
+                { id: '12', name: 'Breaststroke Form', status: 'submitted', score: null, date: '2024-01-10', videoUrl: 'sample-video-7.mp4', goal: 'Breaststroke 50m in 40s', currentGoal: 'Breaststroke 50m in 40s' },
             ]
         },
         { 
@@ -71,9 +75,9 @@ export default function ReviewPage() {
             pendingDrills: 3, 
             submittedDrills: 2,
             drills: [
-                { id: '13', name: '100m Sprint', status: 'completed', score: 95, date: '2024-01-11', videoUrl: '' },
-                { id: '14', name: 'Long Jump', status: 'submitted', score: null, date: '2024-01-10', videoUrl: 'sample-video-8.mp4' },
-                { id: '15', name: 'High Jump', status: 'submitted', score: null, date: '2024-01-09', videoUrl: 'sample-video-9.mp4' },
+                { id: '13', name: '100m Sprint', status: 'completed', score: 95, date: '2024-01-11', videoUrl: '', goal: '100m in 11 seconds', currentGoal: '100m in 10.5 seconds' },
+                { id: '14', name: 'Long Jump', status: 'submitted', score: null, date: '2024-01-10', videoUrl: 'sample-video-8.mp4', goal: 'Jump 6.5m', currentGoal: 'Jump 6.5m' },
+                { id: '15', name: 'High Jump', status: 'submitted', score: null, date: '2024-01-09', videoUrl: 'sample-video-9.mp4', goal: 'Jump 1.8m', currentGoal: 'Jump 1.8m' },
             ]
         },
     ];
@@ -108,6 +112,24 @@ export default function ReviewPage() {
     const handleViewVideo = (videoUrl: string) => {
         setSelectedDrillVideo(videoUrl);
         setShowVideoModal(true);
+    };
+
+    const handleUpdateGoal = (drill: any) => {
+        setSelectedDrill(drill);
+        setNewGoal(drill.currentGoal);
+        setShowGoalUpdateModal(true);
+    };
+
+    const handleSaveGoal = () => {
+        if (selectedDrill && newGoal && selectedAthlete) {
+            // In a real app, this would update the database
+            console.log(`Updated goal for ${selectedAthlete}'s ${selectedDrill.name} to: ${newGoal}`);
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+            setShowGoalUpdateModal(false);
+            setSelectedDrill(null);
+            setNewGoal('');
+        }
     };
 
     const selectedAthleteData = athletes.find(athlete => athlete.id === selectedAthlete);
@@ -244,7 +266,7 @@ export default function ReviewPage() {
                                         <div className="flex justify-between items-center">
                                             <div className="flex-1">
                                                 <h4 className="font-medium text-gray-900 mb-1">{drill.name}</h4>
-                                                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
                                                     <span>Date: {drill.date}</span>
                                                     {drill.score && (
                                                         <span className={`font-medium ${getScoreColor(drill.score)}`}>
@@ -252,11 +274,27 @@ export default function ReviewPage() {
                                                         </span>
                                                     )}
                                                 </div>
+                                                <div className="text-sm">
+                                                    <span className="text-gray-500">Original Goal: </span>
+                                                    <span className="font-medium text-gray-700">{drill.goal}</span>
+                                                </div>
+                                                <div className="text-sm">
+                                                    <span className="text-gray-500">Current Goal: </span>
+                                                    <span className="font-medium text-blue-600">{drill.currentGoal}</span>
+                                                </div>
                                             </div>
                                             <div className="flex items-center space-x-3">
                                                 <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(drill.status)}`}>
                                                     {drill.status.charAt(0).toUpperCase() + drill.status.slice(1)}
                                                 </span>
+                                                {drill.status === 'completed' && (
+                                                    <button
+                                                        onClick={() => handleUpdateGoal(drill)}
+                                                        className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-green-500 hover:to-green-600 hover:scale-105 transform transition-all duration-300"
+                                                    >
+                                                        Update Goal
+                                                    </button>
+                                                )}
                                                 {drill.status === 'submitted' && drill.videoUrl && (
                                                     <button
                                                         onClick={() => handleViewVideo(drill.videoUrl)}
@@ -297,6 +335,72 @@ export default function ReviewPage() {
                                     <p className="text-gray-300 mb-4">Video: {selectedDrillVideo}</p>
                                     <p className="text-gray-400 text-sm">Video player would be embedded here</p>
                                 </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Goal Update Modal */}
+                    {showGoalUpdateModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-xl font-bold text-gray-800">Update Drill Goal</h3>
+                                    <button
+                                        onClick={() => setShowGoalUpdateModal(false)}
+                                        className="text-gray-500 hover:text-gray-700"
+                                    >
+                                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div className="mb-6">
+                                    <p className="text-gray-600 mb-2">
+                                        <span className="font-medium">Drill:</span> {selectedDrill?.name}
+                                    </p>
+                                    <p className="text-gray-600 mb-4">
+                                        <span className="font-medium">Current Goal:</span> {selectedDrill?.currentGoal}
+                                    </p>
+                                    
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        New Goal
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={newGoal}
+                                        onChange={(e) => setNewGoal(e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Enter new goal (e.g., 100m in 9 seconds)"
+                                    />
+                                </div>
+                                
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => setShowGoalUpdateModal(false)}
+                                        className="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors duration-200"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleSaveGoal}
+                                        className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg font-medium hover:from-green-500 hover:to-green-600 hover:scale-105 transform transition-all duration-300"
+                                    >
+                                        Update Goal
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Toast Notification */}
+                    {showToast && (
+                        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300">
+                            <div className="flex items-center">
+                                <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Goal updated successfully!
                             </div>
                         </div>
                     )}

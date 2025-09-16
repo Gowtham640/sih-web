@@ -85,7 +85,7 @@ export default function CoachDashboard() {
                 <div className="bg-gray-50 rounded-2xl p-8 max-w-7xl w-full">
                     <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">Quick Actions</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Card 1 - Upload Video */}
+                    {/* Card 1 - Upload Video */}
                         <div className="relative bg-white border-4 border-gray-200 rounded-lg h-[50vh] shadow-lg hover:shadow-2xl transition-all duration-300 p-8 flex flex-col justify-between transform hover:scale-105 overflow-hidden">
                             {/* Neon Glow Effect */}
                             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-purple-600/30 to-transparent blur-sm"></div>
@@ -111,8 +111,8 @@ export default function CoachDashboard() {
                                 </div>
                                 <button onClick={() => router.push('/coach/upload')} className="w-full bg-gradient-to-r from-purple-900 to-blue-900 text-white px-8 py-4 rounded-lg font-medium hover:from-purple-800 hover:to-blue-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg mt-auto">
                                     Create Drill
-                                </button>
-                            </div>
+                        </button>
+                    </div>
                         </div>
 
                         {/* Card 2 - Assign Drills */}
@@ -141,8 +141,8 @@ export default function CoachDashboard() {
                                 </div>
                                 <button onClick={() => router.push('/coach/assign')} className="w-full bg-gradient-to-r from-purple-900 to-blue-900 text-white px-8 py-4 rounded-lg font-medium hover:from-purple-800 hover:to-blue-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg mt-auto">
                                     Assign Drills
-                                </button>
-                            </div>
+                        </button>
+                    </div>
                         </div>
 
                         {/* Card 3 - Review Progress */}
@@ -171,7 +171,7 @@ export default function CoachDashboard() {
                                 </div>
                                 <button onClick={() => router.push('/coach/review')} className="w-full bg-gradient-to-r from-purple-900 to-blue-900 text-white px-8 py-4 rounded-lg font-medium hover:from-purple-800 hover:to-blue-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg mt-auto">
                                     Review Progress
-                                </button>
+                        </button>
                             </div>
                         </div>
                     </div>
