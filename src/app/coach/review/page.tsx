@@ -9,7 +9,18 @@ export default function ReviewPage() {
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [selectedDrillVideo, setSelectedDrillVideo] = useState<string>('');
     const [showGoalUpdateModal, setShowGoalUpdateModal] = useState(false);
-    const [selectedDrill, setSelectedDrill] = useState<{
+    const [selectedDrill, setSelectedDrill] = useState<DrillWithProgress | null>(null);
+    const [newGoal, setNewGoal] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const [showProgressGraph, setShowProgressGraph] = useState(false);
+    // Define types for drill data
+    interface ProgressHistoryEntry {
+        date: string;
+        goal: string;
+        achieved: string;
+    }
+
+    interface DrillWithProgress {
         id: string;
         name: string;
         status: string;
@@ -18,24 +29,27 @@ export default function ReviewPage() {
         videoUrl: string;
         goal: string;
         currentGoal: string;
-    } | null>(null);
-    const [newGoal, setNewGoal] = useState('');
-    const [showToast, setShowToast] = useState(false);
-    const [showProgressGraph, setShowProgressGraph] = useState(false);
+        progressHistory?: ProgressHistoryEntry[];
+    }
+
     const [selectedDrillProgress, setSelectedDrillProgress] = useState<{
         id: string;
         drillName: string;
         category: string;
         goal: string;
-        progressHistory: Array<{
-            date: string;
-            goal: string;
-            achieved: string;
-        }>;
+        progressHistory: ProgressHistoryEntry[];
     } | null>(null);
 
     // Mock data with Indian names
-    const athletes = [
+    const athletes: Array<{
+        id: string;
+        name: string;
+        sport: string;
+        completedDrills: number;
+        pendingDrills: number;
+        submittedDrills: number;
+        drills: DrillWithProgress[];
+    }> = [
         { 
             id: '1', 
             name: 'Arjun Sharma', 
@@ -195,16 +209,7 @@ export default function ReviewPage() {
         setShowVideoModal(true);
     };
 
-    const handleUpdateGoal = (drill: {
-        id: string;
-        name: string;
-        status: string;
-        score: number | null;
-        date: string;
-        videoUrl: string;
-        goal: string;
-        currentGoal: string;
-    }) => {
+    const handleUpdateGoal = (drill: DrillWithProgress) => {
         setSelectedDrill(drill);
         setNewGoal(drill.currentGoal);
         setShowGoalUpdateModal(true);
@@ -374,7 +379,7 @@ export default function ReviewPage() {
                                                     <span className="text-gray-500">Current Goal: </span>
                                                     <span className="font-medium text-blue-600">{drill.currentGoal}</span>
                                                 </div>
-                                                {(drill as any).progressHistory && (
+                                                {drill.progressHistory && (
                                                     <button
                                                         onClick={() => {
                                                             setSelectedDrillProgress({
@@ -382,7 +387,7 @@ export default function ReviewPage() {
                                                                 drillName: drill.name,
                                                                 category: selectedAthleteData.sport,
                                                                 goal: drill.goal,
-                                                                progressHistory: (drill as any).progressHistory
+                                                                progressHistory: drill.progressHistory || []
                                                             });
                                                             setShowProgressGraph(true);
                                                         }}
