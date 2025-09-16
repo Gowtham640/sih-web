@@ -1,17 +1,55 @@
 "use client";
-import React from 'react';
-import {useRouter} from "next/navigation";
+import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import { Coach } from '@/lib/supabase';
 
 export default function CoachDashboard() {
     const router = useRouter();
+    const [coach, setCoach] = useState<Coach | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const storedCoach = localStorage.getItem('coach_user');
+        if (storedCoach) {
+            setCoach(JSON.parse(storedCoach));
+        } else {
+            router.push('/');
+        }
+        setIsLoading(false);
+    }, [router]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('coach_user');
+        router.push('/');
+    };
+
+    if (isLoading) {
+        return (
+            <div className="bg-white w-full h-screen flex items-center justify-center">
+                <div className="text-2xl font-bold text-gray-600">Loading...</div>
+            </div>
+        );
+    }
+
+    if (!coach) {
+        return null;
+    }
+
     return(
         <div className='bg-white w-full h-screen'>
             {/* Gradient Header */}
             <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-1/5 flex items-center justify-center">
+                <div className="absolute left-6 text-white">
+                    <p className="text-lg font-medium">Welcome back,</p>
+                    <p className="text-2xl font-bold">{coach.name}</p>
+                </div>
                 <p className='absolute text-white font-sans font-bold text-6xl '>Coach Dashboard</p>
-                <button onClick={() => router.push('/')} className="absolute right-3 font-roboto font-medium text-lg flex text-center bg-white text-blue-900 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">Home</button>
+                <div className="absolute right-3 flex gap-2">
+                    <button onClick={handleLogout} className="font-roboto font-medium text-lg flex text-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">Logout</button>
+                    <button onClick={() => router.push('/')} className="font-roboto font-medium text-lg flex text-center bg-white text-blue-900 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">Home</button>
+                </div>
             </div>
-            
+
             {/* Stats Section */}
             <div className="bg-white px-8 py-6 flex justify-center">
                 <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-8 max-w-5xl w-full">
@@ -79,7 +117,7 @@ export default function CoachDashboard() {
                     </div>
                 </div>
             </div>
-            
+
             {/* Main Content Area */}
             <div className="bg-white h-auto px-8 py-8 flex justify-center">
                 <div className="bg-gray-50 rounded-2xl p-8 max-w-7xl w-full">
@@ -91,7 +129,7 @@ export default function CoachDashboard() {
                             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-purple-600/30 to-transparent blur-sm"></div>
                             <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-blue-500/20 to-transparent blur-md"></div>
                             <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-cyan-400/15 to-transparent blur-lg"></div>
-                            
+
                             {/* Content Section */}
                             <div className="flex-1 flex flex-col">
                                 <div className="flex-1">
@@ -121,7 +159,7 @@ export default function CoachDashboard() {
                             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-blue-600/30 to-transparent blur-sm"></div>
                             <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-purple-500/20 to-transparent blur-md"></div>
                             <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-cyan-400/15 to-transparent blur-lg"></div>
-                            
+
                             {/* Content Section */}
                             <div className="flex-1 flex flex-col">
                                 <div className="flex-1">
@@ -151,7 +189,7 @@ export default function CoachDashboard() {
                             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-green-600/30 to-transparent blur-sm"></div>
                             <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-blue-500/20 to-transparent blur-md"></div>
                             <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-cyan-400/15 to-transparent blur-lg"></div>
-                            
+
                             {/* Content Section */}
                             <div className="flex-1 flex flex-col">
                                 <div className="flex-1">
@@ -180,4 +218,3 @@ export default function CoachDashboard() {
         </div>
     )
 }
-

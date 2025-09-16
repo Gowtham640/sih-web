@@ -1,21 +1,34 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from "next/navigation";
+import LoginModal from '@/components/LoginModal';
 
 export default function Home() {
   const router = useRouter();
-  
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginUserType, setLoginUserType] = useState<'coach' | 'athlete'>('coach');
+
+  const handleLoginClick = (userType: 'coach' | 'athlete') => {
+    setLoginUserType(userType);
+    setIsLoginModalOpen(true);
+  };
+
+  const handleLoginSuccess = (user: any) => {
+    const userType = loginUserType;
+    router.push(`/${userType}`);
+  };
+
   return (
     <div className="bg-white w-full h-screen">
       {/* Gradient Header */}
       <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-32 flex items-center justify-center shadow-xl">
         <p className='absolute text-white font-sans font-bold text-6xl'>Sports Training Hub</p>
         <div className="absolute right-6 flex gap-4">
-          <button onClick={() => router.push('/coach')} className="font-roboto font-medium text-lg flex text-center bg-white text-blue-900 px-6 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg">Coach Login</button>
-          <button onClick={() => router.push('/athlete')} className="font-roboto font-medium text-lg flex text-center bg-white text-purple-900 px-6 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg">Athlete Login</button>
+          <button onClick={() => handleLoginClick('coach')} className="font-roboto font-medium text-lg flex text-center bg-white text-blue-900 px-6 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg">Coach Login</button>
+          <button onClick={() => handleLoginClick('athlete')} className="font-roboto font-medium text-lg flex text-center bg-white text-purple-900 px-6 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg">Athlete Login</button>
         </div>
       </div>
-      
+
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 px-8 py-16 flex justify-center">
         <div className="max-w-6xl w-full text-center">
@@ -25,7 +38,7 @@ export default function Home() {
           <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
             A comprehensive platform for coaches and athletes to collaborate, track progress, and achieve peak performance through structured training programs.
           </p>
-          
+
           {/* Feature Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {/* Feature 1 */}
@@ -105,16 +118,23 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-800 mb-4">Ready to Get Started?</h2>
             <p className="text-gray-600 mb-8">Choose your role and begin your training journey today.</p>
             <div className="flex justify-center gap-6">
-              <button onClick={() => router.push('/coach')} className="bg-gradient-to-r from-purple-900 to-blue-900 text-white px-8 py-4 rounded-lg font-medium hover:from-purple-800 hover:to-blue-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg">
+              <button onClick={() => handleLoginClick('coach')} className="bg-gradient-to-r from-purple-900 to-blue-900 text-white px-8 py-4 rounded-lg font-medium hover:from-purple-800 hover:to-blue-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg">
                 I&apos;m a Coach
               </button>
-              <button onClick={() => router.push('/athlete')} className="bg-gradient-to-r from-blue-900 to-purple-900 text-white px-8 py-4 rounded-lg font-medium hover:from-blue-800 hover:to-purple-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg">
+              <button onClick={() => handleLoginClick('athlete')} className="bg-gradient-to-r from-blue-900 to-purple-900 text-white px-8 py-4 rounded-lg font-medium hover:from-blue-800 hover:to-purple-800 hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl text-lg">
                 I&apos;m an Athlete
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        userType={loginUserType}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 }
