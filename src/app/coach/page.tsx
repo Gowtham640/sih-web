@@ -1,13 +1,48 @@
 "use client";
-import React from 'react';
-import {useRouter} from "next/navigation";
+import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import { Coach } from '@/lib/supabase';
 
 export default function CoachDashboard() {
     const router = useRouter();
+    const [coach, setCoach] = useState<Coach | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const storedCoach = localStorage.getItem('coach_user');
+        if (storedCoach) {
+            setCoach(JSON.parse(storedCoach));
+        } else {
+            router.push('/');
+        }
+        setIsLoading(false);
+    }, [router]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('coach_user');
+        router.push('/');
+    };
+
+    if (isLoading) {
+        return (
+            <div className="bg-white w-full h-screen flex items-center justify-center">
+                <div className="text-2xl font-bold text-gray-600">Loading...</div>
+            </div>
+        );
+    }
+
+    if (!coach) {
+        return null;
+    }
+
     return(
         <div className='bg-white w-full h-screen'>
             {/* Gradient Header */}
             <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-1/5 flex items-center justify-center">
+                <div className="absolute left-6 text-white">
+                    <p className="text-lg font-medium">Welcome back,</p>
+                    <p className="text-2xl font-bold">{coach.name}</p>
+                </div>
                 <p className='absolute text-white font-sans font-bold text-6xl '>Coach Dashboard</p>
                 <button onClick={() => router.push('/')} className="absolute right-3 bg-white text-blue-900 p-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,7 +50,7 @@ export default function CoachDashboard() {
                     </svg>
                 </button>
             </div>
-            
+
             {/* Stats Section */}
             <div className="bg-white px-8 py-6 flex justify-center">
                 <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-8 max-w-5xl w-full">
@@ -83,7 +118,8 @@ export default function CoachDashboard() {
                     </div>
                 </div>
             </div>
-            
+
+
             {/* Drill Analytics Chart */}
             <div className="bg-white px-8 py-6 flex justify-center">
                 <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-8 max-w-4xl w-full">
@@ -95,46 +131,46 @@ export default function CoachDashboard() {
                                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                                     {/* Background circle */}
                                     <circle cx="50" cy="50" r="35" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1"/>
-                                    
+
                                     {/* Completed drills - 40% */}
-                                    <circle 
-                                        cx="50" cy="50" r="35" 
-                                        fill="none" 
-                                        stroke="url(#gradient1)" 
-                                        strokeWidth="12" 
+                                    <circle
+                                        cx="50" cy="50" r="35"
+                                        fill="none"
+                                        stroke="url(#gradient1)"
+                                        strokeWidth="12"
                                         strokeDasharray="88.0 131.9"
                                         strokeDashoffset="0"
                                         className="transition-all duration-1500 ease-out"
                                         style={{filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))'}}
                                     />
-                                    
+
                                     {/* Pending drills - 35% */}
-                                    <circle 
-                                        cx="50" cy="50" r="35" 
-                                        fill="none" 
-                                        stroke="url(#gradient2)" 
-                                        strokeWidth="12" 
+                                    <circle
+                                        cx="50" cy="50" r="35"
+                                        fill="none"
+                                        stroke="url(#gradient2)"
+                                        strokeWidth="12"
                                         strokeDasharray="77.0 142.9"
                                         strokeDashoffset="-88.0"
                                         className="transition-all duration-1500 ease-out"
                                         style={{filter: 'drop-shadow(0 4px 8px rgba(147, 51, 234, 0.3))'}}
                                     />
-                                    
+
                                     {/* Submitted drills - 25% */}
-                                    <circle 
-                                        cx="50" cy="50" r="35" 
-                                        fill="none" 
-                                        stroke="url(#gradient3)" 
-                                        strokeWidth="12" 
+                                    <circle
+                                        cx="50" cy="50" r="35"
+                                        fill="none"
+                                        stroke="url(#gradient3)"
+                                        strokeWidth="12"
                                         strokeDasharray="55.0 164.9"
                                         strokeDashoffset="-165.0"
                                         className="transition-all duration-1500 ease-out"
                                         style={{filter: 'drop-shadow(0 4px 8px rgba(236, 72, 153, 0.3))'}}
                                     />
-                                    
+
                                     {/* Center glow effect */}
                                     <circle cx="50" cy="50" r="25" fill="url(#centerGradient)" opacity="0.1"/>
-                                    
+
                                     {/* Gradients */}
                                     <defs>
                                         <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -165,7 +201,7 @@ export default function CoachDashboard() {
                                 </svg>
                             </div>
                         </div>
-                        
+
                         {/* Legend */}
                         <div className="flex-1 space-y-6">
                             <div className="flex items-center space-x-4">
@@ -193,7 +229,7 @@ export default function CoachDashboard() {
                     </div>
                 </div>
             </div>
-            
+
             {/* Main Content Area */}
             <div className="bg-white h-auto px-8 py-8 flex justify-center">
                 <div className="bg-gray-50 rounded-2xl p-8 max-w-7xl w-full">
@@ -205,7 +241,7 @@ export default function CoachDashboard() {
                             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-purple-600/30 to-transparent blur-sm"></div>
                             <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-blue-500/20 to-transparent blur-md"></div>
                             <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-cyan-400/15 to-transparent blur-lg"></div>
-                            
+
                             {/* Content Section */}
                             <div className="flex-1 flex flex-col">
                                 <div className="flex-1">
@@ -238,7 +274,7 @@ export default function CoachDashboard() {
                             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-blue-600/30 to-transparent blur-sm"></div>
                             <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-purple-500/20 to-transparent blur-md"></div>
                             <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-cyan-400/15 to-transparent blur-lg"></div>
-                            
+
                             {/* Content Section */}
                             <div className="flex-1 flex flex-col">
                                 <div className="flex-1">
@@ -271,7 +307,7 @@ export default function CoachDashboard() {
                             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-green-600/30 to-transparent blur-sm"></div>
                             <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-blue-500/20 to-transparent blur-md"></div>
                             <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-cyan-400/15 to-transparent blur-lg"></div>
-                            
+
                             {/* Content Section */}
                             <div className="flex-1 flex flex-col">
                                 <div className="flex-1">
@@ -303,4 +339,3 @@ export default function CoachDashboard() {
         </div>
     )
 }
-
