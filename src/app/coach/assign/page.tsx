@@ -1,121 +1,156 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
+import { useAuth } from '../../../contexts/AuthContext';
+import { supabase } from '../../../lib/supabase';
 
 export default function AssignPage() {
     const router = useRouter();
+    const { user } = useAuth();
     const [selectedAthlete, setSelectedAthlete] = useState<string>('');
     const [selectedDrill, setSelectedDrill] = useState<string>('');
     const [drillGoal, setDrillGoal] = useState<string>('');
     const [dueDate, setDueDate] = useState<string>('');
     const [showToast, setShowToast] = useState(false);
+    const [athletes, setAthletes] = useState<any[]>([]);
+    const [drills, setDrills] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Mock data with Indian names
-    const athletes = [
-        { id: '1', name: 'Arjun Sharma', grade: '10th', sport: 'Cricket', completedDrills: 8, pendingDrills: 2, submittedDrills: 1 },
-        { id: '2', name: 'Priya Patel', grade: '11th', sport: 'Badminton', completedDrills: 12, pendingDrills: 1, submittedDrills: 3 },
-        { id: '3', name: 'Rahul Kumar', grade: '9th', sport: 'Football', completedDrills: 6, pendingDrills: 4, submittedDrills: 2 },
-        { id: '4', name: 'Sneha Singh', grade: '12th', sport: 'Swimming', completedDrills: 15, pendingDrills: 0, submittedDrills: 5 },
-        { id: '5', name: 'Vikram Reddy', grade: '10th', sport: 'Athletics', completedDrills: 10, pendingDrills: 3, submittedDrills: 2 },
-        { id: '6', name: 'Ananya Gupta', grade: '11th', sport: 'Tennis', completedDrills: 9, pendingDrills: 2, submittedDrills: 1 },
-        { id: '7', name: 'Karthik Nair', grade: '9th', sport: 'Basketball', completedDrills: 7, pendingDrills: 5, submittedDrills: 3 },
-        { id: '8', name: 'Meera Joshi', grade: '12th', sport: 'Volleyball', completedDrills: 11, pendingDrills: 1, submittedDrills: 4 },
-    ];
+    useEffect(() => {
+        if (!user || user.type !== 'coach') {
+            router.push('/coach/login');
+            return;
+        }
+        fetchData();
+    }, [user, router]);
 
-    // Available drills created by coach
-    const availableDrills = [
-        { id: '1', name: 'Cricket Batting Practice', category: 'Cricket', goal: 'Improve batting technique' },
-        { id: '2', name: 'Badminton Footwork', category: 'Badminton', goal: 'Enhance court movement' },
-        { id: '3', name: 'Football Dribbling', category: 'Football', goal: 'Master ball control' },
-        { id: '4', name: 'Swimming Freestyle', category: 'Swimming', goal: 'Perfect stroke technique' },
-        { id: '5', name: '100m Sprint Training', category: 'Athletics', goal: 'Improve speed and endurance' },
-        { id: '6', name: 'Tennis Serve Practice', category: 'Tennis', goal: 'Consistent serve accuracy' },
-        { id: '7', name: 'Basketball Shooting', category: 'Basketball', goal: 'Increase shooting percentage' },
-        { id: '8', name: 'Volleyball Spiking', category: 'Volleyball', goal: 'Powerful attack technique' },
-    ];
+    const fetchData = async () => {
+        if (!user) return;
 
-    const handleAssignDrill = () => {
-        if (selectedAthlete && selectedDrill && drillGoal && dueDate) {
-            // Handle drill assignment logic here
-            console.log('Assigning drill:', {
-                athlete: selectedAthlete,
-                drill: selectedDrill,
-                goal: drillGoal,
-                dueDate: dueDate
-            });
+        try {
+            // Fetch athletes assigned to this coach
+            const { data: coachAthletes, error: athletesError } = await supabase
+                .from('coach_athletes')
+                .select(`
+                    athlete_id,
+                    athletes (
+                        id,
+                        name,
+                        grade,
+                        sport
+                    )
+                `)
+                .eq('coach_id', user.id);
+
+            if (athletesError) throw athletesError;
+
+            // Fetch drills created by this coach
+            const { data: coachDrills, error: drillsError } = await supabase
+                .from('drills')
+                .select('*')
+                .eq('coach_id', user.id);
+
+            if (drillsError) throw drillsError;
+
+            setAthletes(coachAthletes?.map(ca => ca.athletes).filter(Boolean) || []);
+            setDrills(coachDrills || []);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+
+    const handleAssignDrill = async () => {
+        if (!selectedAthlete || !selectedDrill || !drillGoal || !dueDate || !user) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from('drill_assignments')
+                .insert({
+                    coach_id: user.id,
+                    athlete_id: parseInt(selectedAthlete),
+                    drill_id: parseInt(selectedDrill),
+                    due_date: dueDate,
+                    custom_goal: drillGoal,
+                    status: 'assigned'
+                });
+
+            if (error) throw error;
+
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);
+
             // Reset form
             setSelectedAthlete('');
             setSelectedDrill('');
             setDrillGoal('');
             setDueDate('');
-        } else {
-            alert('Please fill in all required fields');
+        } catch (error) {
+            console.error('Error assigning drill:', error);
+            alert('Failed to assign drill. Please try again.');
         }
     };
 
-    const selectedAthleteData = athletes.find(athlete => athlete.id === selectedAthlete);
-    const selectedDrillData = availableDrills.find(drill => drill.id === selectedDrill);
+    const selectedAthleteData = athletes.find(athlete => athlete.id === parseInt(selectedAthlete));
+    const selectedDrillData = drills.find(drill => drill.id === parseInt(selectedDrill));
 
     return (
         <div className='bg-white w-full h-screen'>
             {/* Gradient Header */}
-            <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-1/5 flex items-center justify-center">
+                        <div className="relative bg-gradient-to-r from-purple-900 to-blue-900 h-1/5 flex items-center justify-center">
                 <p className='absolute text-white font-sans font-bold text-5xl'>Assign Tests & Drills</p>
-                <button 
-                    onClick={() => router.push('/coach')} 
+                <button
+                    onClick={() => router.push('/coach/dashboard')}
                     className="absolute right-3 font-roboto font-medium text-lg flex text-center bg-white text-blue-900 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
                 >
                     Back to Dashboard
                 </button>
             </div>
-            
+
             {/* Main Content Area */}
             <div className="bg-white px-8 py-8 h-auto">
                 <div className="w-full max-w-none">
-                    {/* Athletes List */}
+                                        {/* Athletes List */}
                     <div className="mb-8">
                         <h2 className="text-gray-800 font-sans font-bold mb-6 text-2xl text-center">
                             Athletes Under Your Coaching
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {athletes.map(athlete => (
-                                <div 
-                                    key={athlete.id} 
-                                    className={`bg-white border-4 border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 cursor-pointer transform hover:scale-105 ${
-                                        selectedAthlete === athlete.id ? 'border-purple-500 bg-purple-50' : ''
-                                    }`}
-                                    onClick={() => setSelectedAthlete(athlete.id)}
-                                >
-                                    <div className="text-center">
-                                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
-                                            <span className="text-white font-bold text-lg">
-                                                {athlete.name.split(' ').map(n => n[0]).join('')}
-                                            </span>
-                                        </div>
-                                        <h3 className="font-bold text-gray-900 text-lg mb-2">{athlete.name}</h3>
-                                        <p className="text-gray-600 text-sm mb-4">{athlete.grade} • {athlete.sport}</p>
-                                        
-                                        {/* Quick Stats */}
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-sm text-gray-600">Completed:</span>
-                                                <span className="text-sm font-bold text-green-600">{athlete.completedDrills}</span>
+                        {loading ? (
+                            <div className="text-center">Loading athletes...</div>
+                        ) : athletes.length === 0 ? (
+                            <div className="text-center text-gray-600">
+                                <p>No athletes assigned to you yet.</p>
+                                <p className="text-sm mt-2">Please contact your administrator to assign athletes.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {athletes.map(athlete => (
+                                    <div
+                                        key={athlete.id}
+                                        className={`bg-white border-4 border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 cursor-pointer transform hover:scale-105 ${
+                                            selectedAthlete === athlete.id.toString() ? 'border-purple-500 bg-purple-50' : ''
+                                        }`}
+                                        onClick={() => setSelectedAthlete(athlete.id.toString())}
+                                    >
+                                        <div className="text-center">
+                                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
+                                                <span className="text-white font-bold text-lg">
+                                                    {athlete.name.split(' ').map((n: string) => n[0]).join('')}
+                                                </span>
                                             </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-sm text-gray-600">Pending:</span>
-                                                <span className="text-sm font-bold text-yellow-600">{athlete.pendingDrills}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-sm text-gray-600">Submitted:</span>
-                                                <span className="text-sm font-bold text-blue-600">{athlete.submittedDrills}</span>
-                                            </div>
+                                            <h3 className="font-bold text-gray-900 text-lg mb-2">{athlete.name}</h3>
+                                            <p className="text-gray-600 text-sm mb-4">{athlete.grade} • {athlete.sport}</p>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Assignment Form */}
@@ -124,7 +159,7 @@ export default function AssignPage() {
                             <h2 className="text-gray-800 font-sans font-bold mb-6 text-2xl text-center">
                                 Assign Drill to {selectedAthleteData.name}
                             </h2>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Drill Selection */}
                                 <div>
@@ -137,9 +172,9 @@ export default function AssignPage() {
                                         className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                                     >
                                         <option value="">Choose a drill...</option>
-                                        {availableDrills.map(drill => (
+                                        {drills.map(drill => (
                                             <option key={drill.id} value={drill.id}>
-                                                {drill.name} ({drill.category})
+                                                {drill.name}
                                             </option>
                                         ))}
                                     </select>
@@ -180,8 +215,8 @@ export default function AssignPage() {
                                     <div className="text-sm text-gray-600 space-y-1">
                                         <p><strong>Athlete:</strong> {selectedAthleteData.name}</p>
                                         <p><strong>Drill:</strong> {selectedDrillData.name}</p>
-                                        <p><strong>Category:</strong> {selectedDrillData.category}</p>
-                                        <p><strong>Goal:</strong> {drillGoal}</p>
+                                        <p><strong>Default Goal:</strong> {selectedDrillData.goal}</p>
+                                        <p><strong>Custom Goal:</strong> {drillGoal}</p>
                                         {dueDate && <p><strong>Due Date:</strong> {dueDate}</p>}
                                     </div>
                                 </div>
