@@ -508,7 +508,11 @@ export default function ReportPage() {
                                                             const achievedValue = parseFloat(entry.achieved.match(/(\d+\.?\d*)/)?.[1] || '0');
                                                             
                                                             // Find min and max values for scaling
-                                                            const allValues = selectedDrillProgress.progressHistory.map((e: any) => [
+                                                            const allValues = selectedDrillProgress.progressHistory.map((e: {
+                                                                date: string;
+                                                                goal: string;
+                                                                achieved: string;
+                                                            }) => [
                                                                 parseFloat(e.goal.match(/(\d+\.?\d*)/)?.[1] || '0'),
                                                                 parseFloat(e.achieved.match(/(\d+\.?\d*)/)?.[1] || '0')
                                                             ]).flat();
@@ -585,7 +589,11 @@ export default function ReportPage() {
                                                         
                                                         {/* X-axis labels (Performance) */}
                                                         {(() => {
-                                                            const allValues = selectedDrillProgress.progressHistory.map((e: any) => [
+                                                            const allValues = selectedDrillProgress.progressHistory.map((e: {
+                                                                date: string;
+                                                                goal: string;
+                                                                achieved: string;
+                                                            }) => [
                                                                 parseFloat(e.goal.match(/(\d+\.?\d*)/)?.[1] || '0'),
                                                                 parseFloat(e.achieved.match(/(\d+\.?\d*)/)?.[1] || '0')
                                                             ]).flat();
